@@ -18,6 +18,36 @@ from core.filesystem.virtual_fs import VirtualFileSystem
 from core.shell.shell import Shell
 
 
+def check_gui_mode():
+    """Check if GUI mode is requested via argument."""
+    if len(sys.argv) > 1:
+        if sys.argv[1] in ['--gui', '-g']:
+            return True
+        if sys.argv[1] in ['--help', '-h']:
+            print_help()
+            sys.exit(0)
+    return False
+
+
+def print_help():
+    """Print help message."""
+    help_text = """
+Kali Linux Simulator - Grey Hack Edition
+
+Usage: python main.py [OPTIONS]
+
+Options:
+  --gui, -g     Launch in GUI mode (Grey Hack style interface)
+  --help, -h    Show this help message
+  (no args)     Launch in CLI mode (terminal interface)
+
+Examples:
+  python main.py           # Start in CLI mode
+  python main.py --gui     # Start in GUI mode
+"""
+    print(help_text)
+
+
 def print_banner():
     """Print the Kali Linux Simulator banner."""
     banner = r"""
@@ -48,6 +78,11 @@ Type 'exit' to quit.
 
 def main():
     """Main entry point for the simulator."""
+    # Check for GUI mode
+    if check_gui_mode():
+        launch_gui_mode()
+        return
+    
     # Initialize colorama
     init(autoreset=True)
     
@@ -96,6 +131,32 @@ def main():
             break
     
     print(f"\n{Fore.GREEN}Goodbye!{Style.RESET_ALL}")
+
+
+def launch_gui_mode():
+    """Launch the GUI mode."""
+    try:
+        from gui_engine import launch_gui
+        from core.filesystem.virtual_fs import VirtualFileSystem
+        from core.shell.shell import Shell
+        
+        # Initialize filesystem and shell
+        fs = VirtualFileSystem()
+        shell = Shell(fs)
+        
+        # Setup demo environment
+        setup_demo_environment(fs, shell)
+        
+        # Launch GUI
+        launch_gui(shell)
+        
+    except ImportError as e:
+        print(f"Error: GUI module not available. Make sure tkinter is installed.")
+        print(f"Details: {e}")
+        sys.exit(1)
+    except Exception as e:
+        print(f"Error launching GUI: {e}")
+        sys.exit(1)
 
 
 def setup_demo_environment(fs: VirtualFileSystem, shell: Shell):

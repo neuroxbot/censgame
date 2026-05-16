@@ -9,11 +9,14 @@ A realistic Kali Linux operating system simulator inspired by Grey Hack. Feature
 pip install -r requirements.txt
 sudo apt-get install python3-tk  # For GUI support on Linux
 
-# Start with GUI (recommended)
-python gui_launcher.py
+# Start with GUI (recommended) - Grey Hack style!
+python main.py --gui
 
 # Or start with CLI only
 python main.py
+
+# Show help
+python main.py --help
 ```
 
 ## Project Structure
@@ -26,11 +29,7 @@ kali_simulator/
 │   ├── network/            # Network simulation (devices, packets, protocols)
 │   ├── devices/            # Device management and emulation
 │   └── processes/          # Process management and scheduling
-├── gui/                    # Graphical user interface ⭐ NEW!
-│   ├── desktop.py          # Main desktop environment
-│   ├── terminal.py         # Terminal emulator window
-│   ├── file_manager.py     # File browser window
-│   └── taskbar.py          # Taskbar with window management
+├── gui_engine.py           # Grey Hack style GUI engine ⭐ NEW!
 ├── languages/              # Custom programming language interpreter
 ├── utils/                  # Utility functions and helpers
 ├── data/                   # Default data and configurations
@@ -44,12 +43,14 @@ kali_simulator/
 
 ## ✨ Features
 
-### 🖼️ GUI Desktop Environment
-- **Full Desktop Interface**: Grey Hack-inspired desktop with icons and windows
-- **Terminal Emulator**: Graphical terminal with syntax highlighting and history
-- **File Manager**: Visual file browser with tree view and drag-and-drop
-- **Taskbar**: Window switching, system tray, clock, and start menu
-- **Multi-window Support**: Open multiple terminals and file managers
+### 🖼️ GUI Desktop Environment (Grey Hack Style)
+- **Single-Window Interface**: All virtual windows rendered inside one OS window
+- **Draggable Windows**: Move terminal and file manager windows freely
+- **CRT Effects**: Scanlines and retro monitor aesthetics
+- **Terminal Widget**: Built-in terminal with color output and command history
+- **File Manager Widget**: Browse files with icons and details
+- **Taskbar**: System tray with clock and app launcher
+- **Cyberpunk Theme**: Dark colors with hacker green accents
 
 ### 📁 Realistic Filesystem
 - Full virtual filesystem with directories, files, permissions, and ownership
@@ -109,14 +110,21 @@ brew install python-tk
 ### GUI Mode (Recommended)
 
 ```bash
-python gui_launcher.py
+python main.py --gui
 ```
 
-This launches the full desktop environment with:
-- Desktop icons for quick access
-- Terminal window (pre-opened)
-- File manager
-- Taskbar with start menu
+This launches the Grey Hack-style desktop environment with:
+- One main window containing all virtual components
+- Draggable terminal window (pre-opened)
+- Taskbar with clock and system tray
+- CRT scanline effects for retro aesthetics
+- Cyberpunk color scheme (dark bg, green text)
+
+**Controls:**
+- Drag windows by their title bar
+- Click [X] button to close windows
+- Type commands in the terminal widget
+- All interaction happens inside the single application window
 
 ### CLI Mode
 
