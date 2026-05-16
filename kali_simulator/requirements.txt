@@ -1,0 +1,18 @@
+# Core dependencies
+colorama>=0.4.6
+prompt_toolkit>=3.0.36
+
+# GUI support
+# tkinter (usually included with Python, install python3-tk on Linux)
+
+# Testing
+pytest>=7.4.0
+pytest-cov>=4.1.0
+
+# Optional: Network simulation enhancements
+# asyncio  # Built-in for async network simulation
+
+# Development
+black>=23.0.0
+flake8>=6.0.0
+mypy>=1.0.0
