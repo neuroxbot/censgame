@@ -29,10 +29,12 @@ class Shell:
     def __init__(self, filesystem: VirtualFileSystem):
         """Initialize the shell with a filesystem instance."""
         self.fs = filesystem
-        self.current_dir: VirtualDirectory = filesystem.root
         self.current_user: User = filesystem.users[0]  # Default to root
         self.history: List[str] = []
         self.aliases: Dict[str, str] = {}
+        
+        # Sync with fs.cwd and get current directory
+        self._update_current_dir_from_fs()
         
         # Register built-in commands
         self.commands: Dict[str, Callable] = {
@@ -100,6 +102,14 @@ class Shell:
         }
         
         self.commands.update(self.kali_tools)
+    
+    def _update_current_dir_from_fs(self):
+        """Update shell's current_dir from filesystem's cwd."""
+        try:
+            self.current_dir = self.fs.get_current_directory()
+        except:
+            self.current_dir = self.fs.root
+            self.fs.cwd = "/"
     
     def execute_command(self, command_line: str) -> CommandResult:
         """Execute a command line."""
@@ -270,9 +280,11 @@ Type 'help <command>' for more information on a specific command.
             home_path = f"/home/{self.current_user.username}"
             try:
                 self.current_dir = self.fs.resolve_path(home_path)
+                self.fs.cwd = self.current_dir.path
                 return CommandResult(output="")
             except:
                 self.current_dir = self.fs.root
+                self.fs.cwd = "/"
                 return CommandResult(output="")
         
         target_path = args[0]
@@ -289,6 +301,7 @@ Type 'help <command>' for more information on a specific command.
             if not isinstance(new_dir, VirtualDirectory):
                 return CommandResult(error=f"Not a directory: {target_path}", exit_code=1)
             self.current_dir = new_dir
+            self.fs.cwd = new_dir.path  # Sync with fs.cwd
             return CommandResult(output="")
         except FileNotFoundError as e:
             return CommandResult(error=str(e), exit_code=1)

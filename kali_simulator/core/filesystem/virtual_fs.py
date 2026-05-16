@@ -202,6 +202,7 @@ class VirtualFileSystem:
         self.users: Dict[int, User] = {}
         self.groups: Dict[int, Group] = {}
         self.current_users: Dict[str, User] = {}  # Session-based user tracking
+        self.cwd: str = "/"  # Current working directory
         
         # Create default users
         self._create_default_users()
@@ -471,3 +472,47 @@ class VirtualFileSystem:
                 if user.password_hash == password or user.password_hash is None:
                     return user
         return None
+    
+    def cd(self, path: str) -> str:
+        """Change current working directory."""
+        try:
+            target_dir = self.resolve_path(path)
+            if not isinstance(target_dir, VirtualDirectory):
+                raise NotADirectoryError(f"Not a directory: {path}")
+            
+            # Update cwd to the resolved path
+            if path.startswith('/'):
+                self.cwd = target_dir.path
+            else:
+                # Relative path - resolve from current cwd
+                current = self.resolve_path(self.cwd)
+                target = self.resolve_path(path, current)
+                self.cwd = target.path
+            
+            return self.cwd
+        except Exception as e:
+            raise FileNotFoundError(f"cd: {path}: {str(e)}")
+    
+    def pwd(self) -> str:
+        """Print current working directory."""
+        return self.cwd
+    
+    def ls(self, path: str = ".", detailed: bool = False) -> Union[List[str], List[Dict]]:
+        """List directory contents."""
+        try:
+            target_dir = self.resolve_path(path)
+            if not isinstance(target_dir, VirtualDirectory):
+                raise NotADirectoryError(f"Not a directory: {path}")
+            
+            root_user = self.users[0]  # Use root for listing
+            
+            if detailed:
+                return target_dir.list_entries_detailed(root_user, show_hidden=True)
+            else:
+                return target_dir.list_entries(root_user, show_hidden=True)
+        except Exception as e:
+            raise FileNotFoundError(f"ls: cannot access '{path}': {str(e)}")
+    
+    def get_current_directory(self) -> VirtualDirectory:
+        """Get the current working directory object."""
+        return self.resolve_path(self.cwd)
